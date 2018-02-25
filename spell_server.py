@@ -1,4 +1,5 @@
-from json import loads
+import json
+import os
 from urllib import unquote_plus
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import TCPServer
@@ -6,7 +7,12 @@ from StringIO import StringIO
 
 SERVER_ADDRESS = ''
 SERVER_PORT = 8080
-SPELLS_DATABASE = 'data/SRD_spell_cards.json'
+
+# Default to the SRD files but if other files are available, read those in instead
+SPELL_DATABASE_FILES = ['data/SRD_spell_card.json']
+other_files = [fn for fn in os.listdir('data') if fn.endswith('.json') and not fn.startswith('SRD_spell_card')]
+if other_files:
+    SPELL_DATABASE_FILES = [os.path.join('data', fn) for fn in other_files]
 SPELLS_TEMPLATE = 'spell_server.html'
 
 
@@ -36,16 +42,12 @@ def SpellDatabase(object):
 class DndSpellsWeb(SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         """Load in spell data and the html template from files, then initialize the HTTP server."""
-        try:
-            with open(SPELLS_DATABASE) as json_file:
-                self.json_data = loads(json_file.read())
-        except IOError:
-            exit("Error loading '%s' data." % SPELLS_DATABASE)
-        try:
-            with open(SPELLS_TEMPLATE) as template_file:
-                self.template_data = template_file.read()
-        except IOError:
-            exit("Error loading template file '%s'." % SPELLS_TEMPLATE)
+        self.json_data = []
+        for spell_fn in SPELL_DATABASE_FILES:
+            with open(spell_fn, 'r') as infile:
+                self.json_data.extend(json.load(infile))
+        with open(SPELLS_TEMPLATE) as template_file:
+            self.template_data = template_file.read()
         SimpleHTTPRequestHandler.__init__(self, request, client_address, server)
 
     def send_head(self):
@@ -110,7 +112,7 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         valid_levels = ['cantrip', '1st-level', '2nd-level', '3rd-level', '4th-level', '5th-level', '6th-level',
                         '7th-level', '8th-level', '9th-level']
         valid_classes = ['bard', 'sorcerer', 'wizard', 'druid', 'cleric', 'warlock', 'ranger', 'paladin']
-        valid_sources = ['PHB']
+        valid_sources = ['PHB', 'SCAG', 'XGE']
         valid_schools = ['enchantment', 'abjuration', 'illusion', 'transmutation',
                          'necromancy', 'evocation', 'divination', 'conjuration']
         valid_components = ['verbal', 'somatic', 'material']
