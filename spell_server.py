@@ -91,6 +91,33 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         center = """
         <input type="text" id="name_search" onkeyup="applyFilter()" placeholder="Search for spell...">
         
+        <p>Select spell levels</p>
+        <form id="spell_level_filter">
+          <input type="checkbox" name="cantrip" onchange="applyFilter()" checked="checked">Cantrip
+          <input type="checkbox" name="1st" onchange="applyFilter()" checked="checked">1st
+          <input type="checkbox" name="2nd" onchange="applyFilter()" checked="checked">2nd
+          <input type="checkbox" name="3rd" onchange="applyFilter()" checked="checked">3rd
+          <input type="checkbox" name="4th" onchange="applyFilter()" checked="checked">4th
+          <input type="checkbox" name="5th" onchange="applyFilter()" checked="checked">5th
+          <input type="checkbox" name="6th" onchange="applyFilter()" checked="checked">6th
+          <input type="checkbox" name="7th" onchange="applyFilter()" checked="checked">7th
+          <input type="checkbox" name="8th" onchange="applyFilter()" checked="checked">8th
+          <input type="checkbox" name="9th" onchange="applyFilter()" checked="checked">9th<br>
+        </form>
+        
+        <p>Select classes</p>
+        <form id="spell_class_filter">
+          <input type="checkbox" name="bard" onchange="applyFilter()" checked="checked">Bard
+          <input type="checkbox" name="sorcerer" onchange="applyFilter()" checked="checked">Sorcerer
+          <input type="checkbox" name="wizard" onchange="applyFilter()" checked="checked">Wizard
+          <input type="checkbox" name="druid" onchange="applyFilter()" checked="checked">Druid
+          <input type="checkbox" name="cleric" onchange="applyFilter()" checked="checked">Cleric
+          <input type="checkbox" name="warlock" onchange="applyFilter()" checked="checked">Warlock
+          <input type="checkbox" name="ranger" onchange="applyFilter()" checked="checked">Ranger
+          <input type="checkbox" name="paladin" onchange="applyFilter()" checked="checked">Paladin<br>
+        </form>
+                    
+        
         <hr>
         
         <table id="spell_table" class="sortable">

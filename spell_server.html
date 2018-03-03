@@ -12,20 +12,74 @@
 
 <script>
     function applyFilter() {
-        var name_input, filter, table, tr, td, i;
+        var name_input, search_string, table, rows, td, i, j;
+        var is_valid;
+        // Set up for the name searching
         name_input = document.getElementById("name_search");
-        filter = name_input.value.toUpperCase();
-        table = document.getElementById("spell_table");
-        tr = table.getElementsByTagName("tr");
+        search_string = name_input.value.toUpperCase();
+        console.log("Search string:");
+        console.log(search_string);
+        // Set up for the spell level filtering
+        var level_elements;
+        var valid_levels = [];
+        level_elements = document.getElementById("spell_level_filter").elements;
+        for (var i = 0, element; element = level_elements[i++];) {
+            if (element.checked === true)
+                valid_levels.push(element.name.toUpperCase());
+        }
+        console.log("Valid levels:");
+        console.log(valid_levels);
+        // Set up for the spell class filtering
+        var class_elements, any_matched;
+        var valid_classes = [];
+        class_elements = document.getElementById("spell_class_filter").elements;
+        for (var i = 0, element; element = class_elements[i++];) {
+            if (element.checked === true)
+                valid_classes.push(element.name.toUpperCase());
+        }
+        console.log("Valid classes:");
+        console.log(valid_classes);
 
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
+        table = document.getElementById("spell_table");
+        rows = table.getElementsByTagName("tr");
+
+        for (i = 0; i < rows.length; i++) {
+            is_valid = true;
+            // Check name
+            td = rows[i].getElementsByTagName("td")[0];
             if (td) {
-                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+                if (td.innerHTML.toUpperCase().indexOf(search_string) === -1) {
+                    is_valid = false;
                 }
+            }
+
+            // Check spell level
+            td = rows[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (valid_levels.indexOf(td.innerHTML.toUpperCase()) === -1) {
+                    is_valid = false;
+                }
+            }
+
+            // Check spell class
+            td = rows[i].getElementsByTagName("td")[4];
+            any_matched = false;
+            if (td) {
+                for (var j = 0, pc_class; pc_class = valid_classes[j++];) {
+                    if (td.innerHTML.toUpperCase().indexOf(pc_class) > -1) {
+                        any_matched = true;
+                        break;
+                    }
+                }
+                if (any_matched === false) {
+                    is_valid = false;
+                }
+            }
+
+            if (is_valid) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
             }
         }
     }
