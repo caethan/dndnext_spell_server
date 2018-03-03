@@ -39,6 +39,11 @@ def SpellDatabase(object):
         return title, subtitle, text_lines, tags, properties
 
 
+def simplify_name(spell_name):
+    alpha_only = ''.join([c for c in spell_name if c.isalpha()])
+    return alpha_only.lower()
+
+
 class DndSpellsWeb(SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         """Load in spell data and the html template from files, then initialize the HTTP server."""
@@ -55,21 +60,16 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
 
         if self.path == '/':
             body = self.parse_index()
+        elif self.path.startswith('/spells/') and self.path.endswith('/'):
+            spell_name = simplify_name(unquote_plus(self.path[8:-1]))
+            for spell in self.json_data:
+                if simplify_name(spell['title']) == simplify_name(spell_name):
+                    body = self.parse_spell(spell)
+            if body is None:
+                self.send_error(404, "Spell '%s' not found." % spell_name)
+                return None
         else:
-            try:
-                spell_end = self.path.index('/', 1)
-            except:
-                return SimpleHTTPRequestHandler.send_head(self)
-            if spell_end > 1:
-                spell_name = unquote_plus(self.path[1:spell_end])
-                for spell in self.json_data:
-                    if spell['title'] == spell_name:
-                        body = self.parse_spell(spell)
-                    elif spell['title'].lower() == spell_name:
-                        body = self.parse_spell(spell)
-                if body is None:
-                    self.send_error(404, "Spell '%s' not found." % spell_name)
-                    return None
+            return SimpleHTTPRequestHandler.send_head(self)
 
         # Send body or default handler
         if body:
@@ -120,6 +120,13 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         
         <hr>
         
+        <div id="main_section">
+        
+        <div id="details_section">
+        <p>This is where spell details will go</p>
+        </div>
+        
+        <div id="table_section">
         <table id="spell_table" class="sortable">
         <tr class="header">
         <th>Name</th>
@@ -132,12 +139,17 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         </tr>
         {}
         </table>
+        </div>
+        
+        </div>
+        
         """.format('\n'.join(self.spell_to_table_row(spell) for spell in spells))
 
         return response[0:cut_from - 1] + center + response[cut_to + 8:]
 
     def spell_to_table_row(self, spell):
         title = spell['title']
+        simple_title = simplify_name(title)
         tags = spell['tags']
 
         valid_levels = ['cantrip', '1st-level', '2nd-level', '3rd-level', '4th-level', '5th-level', '6th-level',
@@ -181,7 +193,7 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
 
         return """
         <tr class="spell_row">
-        <td class="spell_name"><a href="./{title}/">{title}</a></td>
+        <td class="spell_name"><a href="./spells/{simple_title}/">{title}</a></td>
         <td sorttable_customkey={numeric_level}" class="spell_level">{spell_level}</td>
         <td class="spell_school">{spell_school}</td>
         <td class="spell_components">{spell_components}</td>

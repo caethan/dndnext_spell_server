@@ -18,8 +18,31 @@ html {
     margin-bottom: 12px; /* Add some space below the input */
 }
 
+#main_section::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+#table_section {
+    padding: 15px;
+    width: 95%;
+    align-self: center;
+}
+
+#details_section {
+    position: fixed;
+    right: 10px;
+    left: 60%;
+    top: 10%;
+    bottom: 20%;
+    background-color: #9acfea;
+    padding: 15px;
+    display: none;
+}
+
 #spell_table {
-    width: 90%;
+    width: 100%;
 }
 
 table, tr, th {
