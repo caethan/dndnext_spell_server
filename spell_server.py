@@ -193,7 +193,7 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
 
         return """
         <tr class="spell_row">
-        <td class="spell_name"><a href="./spells/{simple_title}/">{title}</a></td>
+        <td class="spell_name"><a href="/spells/{simple_title}/">{title}</a></td>
         <td sorttable_customkey={numeric_level}" class="spell_level">{spell_level}</td>
         <td class="spell_school">{spell_school}</td>
         <td class="spell_components">{spell_components}</td>
@@ -217,10 +217,6 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
                         spell_subtitle = content[11:]
                     if content.startswith("property"):
                         spell_properties.append(content[11:])
-                    if content.startswith("fill"):
-                        brs = int(content[7:])
-                        for i in range(brs):
-                            spell_p.append("")
                     if content.startswith("text"):
                         spell_p.append(content[7:])
                     if content.startswith("bullet"):

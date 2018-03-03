@@ -11,10 +11,50 @@
 <main></main>
 
 <script>
-    function showSpell(spell_name) {
 
+    function getHTML(url, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            var html = this.responseXML.documentElement;
+            console.log(html.getElementsByTagName('main')[0].innerHTML);
+            callback(html.getElementsByTagName('main')[0].innerHTML);
+        };
+        xhr.open("GET", url);
+        xhr.responseType = "document";
+        xhr.send();
     }
 
+    function fillOverlay(html) {
+        var overlay = document.getElementById("details_section");
+        //overlay.innerHTML = url;
+        overlay.style.display = "";
+        overlay.innerHTML = html;
+    }
+
+    function hideDetails() {
+        var overlay = document.getElementById("details_section");
+        overlay.style.display = 'none';
+    }
+
+    function addRowHandlers() {
+        var currentRow;
+        var table = document.getElementById("spell_table");
+        var rows = table.getElementsByTagName("tr");
+        for (i = 1; i < rows.length; i++) {
+            currentRow = table.rows[i];
+            var createClickHandler =
+                function(row)
+                {
+                    return function() {
+                        var cell = row.getElementsByTagName("td")[0];
+                        var url = cell.getElementsByTagName("a")[0].getAttribute("href");
+                        getHTML(url, fillOverlay);
+                    };
+                };
+
+            currentRow.onclick = createClickHandler(currentRow);
+        }
+    }
 
     function applyFilter() {
         var name_input, search_string, table, rows, td, i, j;
@@ -88,6 +128,8 @@
             }
         }
     }
+    addRowHandlers()
+    document.getElementById("details_section").style.display = "none";
 </script>
 
 </body>
