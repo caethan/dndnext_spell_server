@@ -89,9 +89,13 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         spells = sorted([spell for spell in self.json_data], key=lambda x: x['title'])
 
         center = """
-        <table>
-        <tr>
-        <th>Title</th>
+        <input type="text" id="name_search" onkeyup="applyFilter()" placeholder="Search for spell...">
+        
+        <hr>
+        
+        <table id="spell_table" class="sortable">
+        <tr class="header">
+        <th>Name</th>
         <th>Level</th>
         <th>School</th>
         <th>Components</th>
@@ -112,7 +116,7 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         valid_levels = ['cantrip', '1st-level', '2nd-level', '3rd-level', '4th-level', '5th-level', '6th-level',
                         '7th-level', '8th-level', '9th-level']
         valid_classes = ['bard', 'sorcerer', 'wizard', 'druid', 'cleric', 'warlock', 'ranger', 'paladin']
-        valid_sources = ['PHB', 'SCAG', 'XGE']
+        valid_sources = ['PHB', 'SCAG', 'XGE', 'EE']
         valid_schools = ['enchantment', 'abjuration', 'illusion', 'transmutation',
                          'necromancy', 'evocation', 'divination', 'conjuration']
         valid_components = ['verbal', 'somatic', 'material']
@@ -146,15 +150,17 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         spell_components = ''.join(spell_components)
         other_tags = ', '.join(other_tags)
 
+        numeric_level = "0" if spell_level == "cantrip" else spell_level[0]
+
         return """
-        <tr>
-        <td><a href="./{title}/">{title}</a></td>
-        <td>{spell_level}</td>
-        <td>{spell_school}</td>
-        <td>{spell_components}</td>
-        <td>{spell_classes}</td>
-        <td>{spell_sources}</td>
-        <td>{other_tags}</td>
+        <tr class="spell_row">
+        <td class="spell_name"><a href="./{title}/">{title}</a></td>
+        <td sorttable_customkey={numeric_level}" class="spell_level">{spell_level}</td>
+        <td class="spell_school">{spell_school}</td>
+        <td class="spell_components">{spell_components}</td>
+        <td class="spell_classes">{spell_classes}</td>
+        <td class="spell_sources">{spell_sources}</td>
+        <td class="spell_other">{other_tags}</td>
         </tr>
         """.format(**locals())
 

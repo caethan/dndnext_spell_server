@@ -1,5 +1,6 @@
 data/all-PHB-spell-cards.json
 data/all-SCAG-spell-cards.json
+data/all-EE-spell-cards.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
