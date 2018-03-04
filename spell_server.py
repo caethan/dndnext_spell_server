@@ -123,7 +123,10 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         <div id="main_section">
         
         <div id="details_section">
+        <button id="close_button">Close</button>
+        <div id="replacement">
         <p>This is where spell details will go</p>
+        </div>
         </div>
         
         <div id="table_section">
@@ -193,7 +196,7 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
 
         return """
         <tr class="spell_row">
-        <td class="spell_name"><a href="/spells/{simple_title}/">{title}</a></td>
+        <td class="spell_name"><a href="/spells/{simple_title}/"></a>{title}</td>
         <td sorttable_customkey={numeric_level}" class="spell_level">{spell_level}</td>
         <td class="spell_school">{spell_school}</td>
         <td class="spell_components">{spell_components}</td>
@@ -204,46 +207,45 @@ class DndSpellsWeb(SimpleHTTPRequestHandler):
         """.format(**locals())
 
     def parse_spell(self, spell):
-        spell_title = u''
-        spell_subtitle = u''
-        spell_properties = []
-        spell_p = []
+        spell_content = ['<div class="spell_text">']
+        is_list_open = False
+
         for field in spell:
             if field == "title":
-                spell_title = spell[field]
+                spell_content.append("<h2>{}</h2>".format(spell[field]))
             elif field == "contents":
                 for content in spell[field]:
+                    try:
+                        idx = content.index('|')
+                        text = content[idx+1:].strip()
+                    except ValueError:
+                        text = content
+                    if content.startswith("property") or content.startswith("bullet"):
+                        if is_list_open:
+                            spell_content.append("<li>{}</li>".format(text))
+                        else:
+                            is_list_open = True
+                            spell_content.append("<ul>\n<li>{}</li>".format(text))
+                    else:
+                        is_list_open = False
+                        spell_content.append("</ul>")
+
                     if content.startswith('subtitle'):
-                        spell_subtitle = content[11:]
-                    if content.startswith("property"):
-                        spell_properties.append(content[11:])
+                        spell_content.append("<p><i>{}</i></p>".format(text))
                     if content.startswith("text"):
-                        spell_p.append(content[7:])
-                    if content.startswith("bullet"):
-                        spell_p.append('&bull;{}'.format(content[9:]))
-
-        spell_content = u''
-
-        if spell_title:
-            spell_content += u"<header><h1>" + spell_title + u"</h1>"
-            if spell_subtitle:
-                spell_content += u"<p>" + spell_subtitle + u"</p>"
-            spell_content += u"</header>"
-
-        if spell_properties:
-            spell_content += u"<ul>"
-            for prop in spell_properties:
-                spell_content += u"<li>" + prop + u"</li>"
-            spell_content += u"</ul>"
-
-        if spell_p:
-            for p in spell_p:
-                spell_content += u"<p>" + (u"&nbsp;" if p == u"" else p) + u"</p>"
+                        spell_content.append("<p>{}</p>".format(text))
+                    if content.startswith("section"):
+                        spell_content.append('<p><b>{}:</b></p>'.format(content[10:]))
+                    if content.startswith("source"):
+                        spell_content.append('<p><i>{}</i></p>'.format(text))
+                    if content.startswith("rule"):
+                        spell_content.append('<hr>')
+        spell_content.append('</div>')
 
         response = self.template_data
         cut_from = response.index(u"<main>")
         cut_to = response.index(u"</main>")
-        return response[0:cut_from + 6] + spell_content + response[cut_to:]
+        return response[0:cut_from + 6] + '\n'.join(spell_content) + response[cut_to:]
 
 
 def main():

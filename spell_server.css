@@ -1,12 +1,12 @@
 html {
     font-size: 12pt;
     font-family: Lora, 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;
-    line-height: 2.5em;
+    line-height: 1.5em;
     font-variant: small-caps;
 }
 
 #name_search {
-    background-image: url('search.png'); /* Add a search icon to input */
+    background-image: url('img/search.png'); /* Add a search icon to input */
     background-position: 5px 6px; /* Position the search icon */
     background-repeat: no-repeat; /* Do not repeat the icon image */
     width: 15%; /* Full-width */
@@ -38,10 +38,18 @@ html {
     bottom: 20%;
     background-color: #9acfea;
     padding: 15px;
+    overflow: scroll;
 }
 
 #spell_table {
     width: 100%;
+    line-height: 2.5em;
+}
+
+#spell_text {
+    font-size: 10pt;
+    line-height: 1.5em;
+    font-variant: normal;
 }
 
 table, tr, th {
@@ -55,4 +63,15 @@ td {
 
 tr:hover {
     background-color: #ddd;
+}
+
+button {
+    background-color: #333333;
+    border: none;
+    color: white;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
 }

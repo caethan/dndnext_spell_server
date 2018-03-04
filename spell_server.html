@@ -16,7 +16,7 @@
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
             var html = this.responseXML.documentElement;
-            console.log(html.getElementsByTagName('main')[0].innerHTML);
+            //console.log(html.getElementsByTagName('main')[0].innerHTML);
             callback(html.getElementsByTagName('main')[0].innerHTML);
         };
         xhr.open("GET", url);
@@ -25,15 +25,9 @@
     }
 
     function fillOverlay(html) {
-        var overlay = document.getElementById("details_section");
-        //overlay.innerHTML = url;
-        overlay.style.display = "";
+        var overlay = document.getElementById("replacement");
+        document.getElementById("details_section").style.display = "";
         overlay.innerHTML = html;
-    }
-
-    function hideDetails() {
-        var overlay = document.getElementById("details_section");
-        overlay.style.display = 'none';
     }
 
     function addRowHandlers() {
@@ -128,8 +122,13 @@
             }
         }
     }
-    addRowHandlers()
+    addRowHandlers();
     document.getElementById("details_section").style.display = "none";
+    document.getElementById("close_button").onclick = function(){
+        var overlay = document.getElementById("details_section");
+        overlay.style.display = "none";
+    }
+
 </script>
 
 </body>
